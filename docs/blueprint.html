@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BharatAV Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#060a0c; --panel:#0b1418; --panel2:#0e1a1f; --line:#16333a;
+  --cyan:#4dd8e6; --cyan-dim:#1c5a64; --amber:#ffb454; --green:#5fe08a; --red:#ff6b6b;
+  --text:#cfe8ec; --text-dim:#8aa6ab; --code-bg:#04080a;
+}
+*{box-sizing:border-box;}
+html,body{background:var(--bg);}
+body{
+  margin:0; color:var(--text); font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  background:
+    radial-gradient(1200px 700px at 15% -10%, rgba(77,216,230,0.06), transparent 60%),
+    radial-gradient(1000px 600px at 110% 10%, rgba(255,180,84,0.05), transparent 55%),
+    var(--bg);
+  min-height:100vh;
+}
+.scanlines{position:fixed; inset:0; pointer-events:none; z-index:50;
+  background:repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 3px);}
+header{border-bottom:1px solid var(--line); padding:22px 20px 16px; background:rgba(6,10,12,0.92);}
+.wrap{max-width:1180px; margin:0 auto;}
+.hdr-row{display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px;}
+h1{font-family:'Orbitron',system-ui,sans-serif; font-weight:900; font-size:clamp(18px,3vw,28px); margin:0; letter-spacing:1px;
+  color:var(--cyan); text-shadow:0 0 18px rgba(77,216,230,0.35); text-wrap:balance;}
+.subtag{color:var(--text-dim); font-size:11.5px; letter-spacing:2px; text-transform:uppercase; margin-top:6px;}
+.badge{border:1px solid rgba(95,224,138,0.45); color:var(--green); font-size:11px; padding:4px 10px; border-radius:2px;
+  letter-spacing:1px; text-transform:uppercase; background:rgba(95,224,138,0.06);}
+.stat-strip{display:flex; gap:24px; margin-top:14px; flex-wrap:wrap;}
+.stat{font-size:11px; color:var(--text-dim); letter-spacing:0.5px;}
+.stat b{display:block; color:var(--green); font-family:'Orbitron',system-ui,sans-serif; font-size:16px; font-weight:700; font-variant-numeric:tabular-nums;}
+
+nav{display:flex; gap:2px; overflow-x:auto; padding:0 20px; border-bottom:1px solid var(--line);
+  background:rgba(8,15,18,0.96); position:sticky; top:env(safe-area-inset-top,0px); z-index:19; backdrop-filter:blur(6px);}
+nav::-webkit-scrollbar{height:4px;} nav::-webkit-scrollbar-thumb{background:var(--cyan-dim);}
+.tab{padding:12px 14px; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--text-dim); cursor:pointer;
+  white-space:nowrap; border:0; border-bottom:2px solid transparent; background:none; font-family:inherit; transition:color .15s;}
+.tab:hover{color:var(--cyan);}
+.tab:focus-visible{outline:1px solid var(--cyan); outline-offset:-3px;}
+.tab.active{color:var(--cyan); border-bottom-color:var(--cyan); background:rgba(77,216,230,0.05);}
+.tab.hot{color:var(--amber);} .tab.hot.active{border-bottom-color:var(--amber); color:var(--amber); background:rgba(255,180,84,0.06);}
+
+main{padding-block:26px 10px; padding-inline:20px; max-width:1180px; margin:0 auto;}
+.panel{display:none;} .panel.active{display:block; animation:fadein .25s ease;}
+@keyframes fadein{from{opacity:.4; transform:translateY(4px);} to{opacity:1; transform:none;}}
+@media (prefers-reduced-motion:reduce){.panel.active{animation:none;}}
+
+.section-title{font-family:'Orbitron',system-ui,sans-serif; font-weight:700; font-size:14px; letter-spacing:2px; color:var(--amber);
+  text-transform:uppercase; margin:34px 0 14px; display:flex; align-items:center; gap:10px; text-wrap:balance;}
+.panel > .section-title:first-child{margin-top:4px;}
+.section-title::before{content:''; flex:none; width:9px; height:9px; border:2px solid var(--amber); transform:rotate(45deg);}
+
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel)); border:1px solid var(--line); border-radius:4px;
+  padding:16px 18px; margin-bottom:14px; min-width:0;}
+.card h3{margin:0 0 8px; font-family:'Orbitron',system-ui,sans-serif; font-size:12.5px; color:var(--cyan); letter-spacing:0.5px; text-transform:uppercase;}
+.card p,.card li,.phase p,.phase li{font-size:13px; line-height:1.65; color:var(--text);}
+.card p{margin:0 0 8px;} .card p:last-child{margin-bottom:0;}
+.card ul,.card ol{margin:6px 0 0; padding-left:18px;}
+.grid2,.grid3{display:grid; gap:14px;}
+.grid2{grid-template-columns:repeat(2,minmax(0,1fr));} .grid3{grid-template-columns:repeat(3,minmax(0,1fr));}
+.grid2 > .card,.grid3 > .card{margin-bottom:0;}
+@media(max-width:860px){.grid2,.grid3{grid-template-columns:minmax(0,1fr);}}
+.stack{display:flex; flex-direction:column; gap:14px;}
+
+.tag{display:inline-block; font-size:10px; padding:2px 8px; border-radius:2px; margin:2px 4px 2px 0; letter-spacing:0.5px;}
+.tag.have{background:rgba(95,224,138,0.12); color:var(--green); border:1px solid rgba(95,224,138,0.35);}
+.tag.new{background:rgba(255,180,84,0.12); color:var(--amber); border:1px solid rgba(255,180,84,0.35);}
+.tag.opt{background:rgba(127,155,160,0.12); color:var(--text-dim); border:1px solid rgba(127,155,160,0.35);}
+
+.tbl{overflow-x:auto; margin-top:6px;}
+table{width:100%; border-collapse:collapse; font-size:12.5px; min-width:560px;}
+th{text-align:left; color:var(--amber); font-family:'Orbitron',system-ui,sans-serif; font-size:10px; letter-spacing:1px; text-transform:uppercase;
+  padding:8px 10px; border-bottom:1px solid var(--line); white-space:nowrap;}
+td{padding:9px 10px; border-bottom:1px solid rgba(22,51,58,0.6); color:var(--text); vertical-align:top; line-height:1.5;}
+tr:hover td{background:rgba(77,216,230,0.03);}
+.num{color:var(--cyan); font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap;}
+.ok{color:var(--green); font-weight:700;} .warnc{color:var(--amber); font-weight:700;}
+
+.flow{display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin:12px 0;}
+.flow-node{background:var(--panel2); border:1px solid var(--cyan-dim); padding:9px 12px; border-radius:3px; font-size:11.5px;
+  color:var(--cyan); text-align:center; min-width:110px; line-height:1.45;}
+.flow-node.b{border-color:rgba(255,180,84,0.45); color:var(--amber);}
+.flow-node.g{border-color:rgba(95,224,138,0.45); color:var(--green);}
+.flow-arrow{color:var(--text-dim); font-size:15px;}
+
+.phase{border-left:2px solid var(--cyan-dim); padding-left:18px; margin:0 0 22px 10px; position:relative;}
+.phase::before{content:attr(data-n); position:absolute; left:-12px; top:0; width:22px; height:22px; background:var(--bg);
+  border:2px solid var(--cyan); border-radius:50%; color:var(--cyan); font-size:10px; display:flex; align-items:center; justify-content:center;
+  font-family:'Orbitron',system-ui,sans-serif; font-weight:700;}
+.phase h3{font-family:'Orbitron',system-ui,sans-serif; color:var(--cyan); font-size:13.5px; margin:0 0 4px; letter-spacing:0.5px;}
+.phase .dur{color:var(--text-dim); font-size:11px; margin-bottom:6px;}
+.phase ul{margin:6px 0 0; padding-left:18px;}
+
+code,.ic{background:rgba(77,216,230,0.08); border:1px solid var(--cyan-dim); color:var(--cyan); padding:1px 5px; border-radius:3px;
+  font-size:11.5px; overflow-wrap:anywhere;}
+.codebox{position:relative; margin:10px 0;}
+.codebox .cap{font-size:10.5px; color:var(--text-dim); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; display:flex; justify-content:space-between; gap:8px; align-items:center;}
+.copy{font-family:inherit; font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--cyan); background:transparent;
+  border:1px solid var(--cyan-dim); border-radius:2px; padding:3px 8px; cursor:pointer;}
+.copy:hover{background:rgba(77,216,230,0.08);} .copy:focus-visible{outline:1px solid var(--cyan);}
+pre{background:var(--code-bg); border:1px solid var(--line); border-radius:4px; padding:12px 14px; overflow-x:auto; font-size:11.5px;
+  line-height:1.6; color:var(--green); margin:0; tab-size:2;}
+pre .c{color:#5f7f85;} pre .k{color:var(--amber);} pre .s{color:var(--cyan);}
+
+.callout{padding:11px 14px; font-size:12.5px; line-height:1.6; color:var(--text); border-radius:0 3px 3px 0; margin:0 0 14px;}
+.warn{border-left:3px solid var(--red); background:rgba(255,107,107,0.06);}
+.note{border-left:3px solid var(--amber); background:rgba(255,180,84,0.06);}
+.win{border-left:3px solid var(--green); background:rgba(95,224,138,0.06);}
+.callout b{color:var(--amber);} .win b{color:var(--green);} .warn b{color:var(--red);}
+
+.metric-row{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap; font-size:12.5px; padding:7px 0; border-bottom:1px dashed rgba(22,51,58,0.9);}
+.metric-row span:last-child{color:var(--cyan); font-weight:700; font-variant-numeric:tabular-nums;}
+
+.verdict{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px;}
+@media(max-width:860px){.verdict{grid-template-columns:minmax(0,1fr);}}
+.vcol{border:1px solid var(--line); border-radius:4px; padding:14px 16px; background:var(--panel);}
+.vcol h4{margin:0 0 6px; font-family:'Orbitron',system-ui,sans-serif; font-size:11.5px; letter-spacing:1px; text-transform:uppercase;}
+.vcol.rec{border-color:rgba(95,224,138,0.5); background:linear-gradient(180deg,rgba(95,224,138,0.06),var(--panel));}
+.vcol.rec h4{color:var(--green);} .vcol h4{color:var(--cyan);}
+.vcol p,.vcol li{font-size:12.5px; line-height:1.6;} .vcol ul{padding-left:16px; margin:6px 0 0;}
+.pill{display:inline-block; font-size:9.5px; letter-spacing:1px; text-transform:uppercase; padding:2px 7px; border-radius:2px;
+  border:1px solid rgba(95,224,138,0.45); color:var(--green); margin-left:6px; vertical-align:middle;}
+
+svg text{font-family:'JetBrains Mono',ui-monospace,monospace;}
+.twinmap{overflow-x:auto; border:1px solid var(--line); border-radius:4px; background:var(--code-bg); padding:8px;}
+.twinmap svg{display:block; min-width:680px; width:100%; height:auto;}
+
+footer{text-align:center; padding:28px 20px; color:var(--text-dim); font-size:11px; letter-spacing:1px;}
+</style>
+</head>
+<body>
+
+<div class="scanlines" aria-hidden="true"></div>
+<header>
+  <div class="wrap">
+    <div class="hdr-row">
+      <div>
+        <h1>BHARAT-AV // ADAPTIVE PLANNING ON UNSTRUCTURED INDIAN ROADS</h1>
+        <div class="subtag">SIH 2026 · MathWorks PS · Build blueprint + Gazebo digital twin</div>
+      </div>
+      <div class="badge">Status: Python stack validated · 47/48 runs, 0 collisions</div>
+    </div>
+    <div class="stat-strip">
+      <div class="stat"><b>6</b>Scenario worlds</div>
+      <div class="stat"><b>0</b>Collisions in 48 runs</div>
+      <div class="stat"><b>20–60 ms</b>Mean replan compute</div>
+      <div class="stat"><b>~0.2 s</b>Detection → new plan</div>
+      <div class="stat"><b>NO LANES</b>Full-width planning</div>
+    </div>
+  </div>
+</header>
+
+<nav id="tabbar" role="tablist" aria-label="Blueprint sections">
+  <button class="tab active" role="tab" data-t="overview">Overview</button>
+  <button class="tab" role="tab" data-t="verdict">Which Platform?</button>
+  <button class="tab" role="tab" data-t="arch">Architecture</button>
+  <button class="tab hot" role="tab" data-t="gazebo">Gazebo Twin</button>
+  <button class="tab hot" role="tab" data-t="gzmodels">Vehicle &amp; Actors</button>
+  <button class="tab hot" role="tab" data-t="gzworlds">Scenario Worlds</button>
+  <button class="tab hot" role="tab" data-t="ros">ROS 2 Nodes</button>
+  <button class="tab" role="tab" data-t="perception">Perception AI</button>
+  <button class="tab" role="tab" data-t="planner">Planner</button>
+  <button class="tab" role="tab" data-t="matlab">MATLAB Track</button>
+  <button class="tab" role="tab" data-t="results">Results</button>
+  <button class="tab" role="tab" data-t="roadmap">Roadmap</button>
+  <button class="tab" role="tab" data-t="demo">Demo &amp; Criteria</button>
+</nav>
+
+<main>
+
+<!-- ============ OVERVIEW ============ -->
+<section class="panel active" id="overview" role="tabpanel">
+  <div class="section-title">Problem Framing</div>
+  <div class="card">
+    <p>Plan and simulate an autonomous car that drives safely on Indian roads with no lane discipline. It shares the road with cars, buses, trucks, auto-rickshaws, two-wheelers, bicycles, pushcarts, pedestrians and cattle, often on roads with no markings, blurred edges and potholes. The car has to <b style="color:var(--amber)">perceive</b> (camera, LiDAR, radar), <b style="color:var(--amber)">predict</b> irregular, non-lane motion, <b style="color:var(--amber)">plan and replan</b> a collision-free path in real time, and <b style="color:var(--amber)">prove</b> it across at least five realistic scenarios using replanning latency, path smoothness and completion rate.</p>
+  </div>
+
+  <div class="section-title">Where We Are Now</div>
+  <div class="callout win">The full autonomy stack already runs closed-loop in Python. It covers sensor models with occlusion, EKF fusion, multi-modal prediction, a decision FSM, A* rerouting, a lane-free Frenet lattice planner and a bicycle-model car. It completed <b>47 of 48</b> randomised runs across 6 scenarios with <b>0 collisions</b>. This blueprint covers the next step: moving that stack into a <b>3D Gazebo digital twin with ROS 2</b>, and keeping the MathWorks deliverables covered.</div>
+
+  <div class="section-title">Three Challenges → Three Modules</div>
+  <div class="grid3">
+    <div class="card"><h3>Perceive</h3><p>Camera (class), LiDAR (position, size, heading) and radar (range, radial velocity) are fused into one track list by an EKF with Hungarian association. Objects hidden behind buses, bushes and buildings stay invisible until they come out.</p></div>
+    <div class="card"><h3>Predict</h3><p>Each track gets a constant-velocity path with class-specific uncertainty growth, which the car must avoid. It also gets possible stop, swerve and dart-into-road moves, which only raise cost. Traffic behind a stopped vehicle is predicted to queue, not drive through it.</p></div>
+    <div class="card"><h3>Plan &amp; Replan</h3><p>About 500–1,100 candidate paths are sampled across the <i>whole</i> road width. Planning runs every 0.2 s, plus immediately on new objects or broken plans. A* reroutes when static objects block the road.</p></div>
+  </div>
+
+  <div class="section-title">What "Full-Fledged" Means Here</div>
+  <div class="card">
+    <ul>
+      <li>A working perception → prediction → planning → decision → vehicle pipeline, closed-loop (done in Python; Simulink port for the MathWorks submission)</li>
+      <li>At least 5 Indian scenarios, with two detailed 3D scenes (village road, urban intersection). This is where the Gazebo twin and RoadRunner come in</li>
+      <li>Metrics: replanning latency, path smoothness, completion rate, plus clearance, time-to-collision and reaction latency</li>
+      <li>A short technical report and a demonstration video (both drafted; the 3D twin makes the video far stronger)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ VERDICT ============ -->
+<section class="panel" id="verdict" role="tabpanel">
+  <div class="section-title">Is This Format Better?</div>
+  <div class="card">
+    <p><b style="color:var(--green)">Yes, for presenting and planning.</b> A tabbed blueprint lets judges and your team jump straight to architecture, results or the demo plan. A single long report hides that. Use this page as the PPT source and the internal-round handout, and keep <code>REPORT.md</code> as the formal technical report.</p>
+    <p><b style="color:var(--amber)">Gazebo is a strong addition but not a replacement.</b> This problem statement's <i>expected solution</i> asks for a MATLAB/Simulink pipeline and two RoadRunner scenes. Gazebo on its own risks being judged off-spec. The plan below uses both, sharing one autonomy stack.</p>
+  </div>
+
+  <div class="section-title">Three Ways to Build the 3D Layer</div>
+  <div class="verdict">
+    <div class="vcol">
+      <h4>A · MATLAB only</h4>
+      <p>RoadRunner scenes, Automated Driving Toolbox sensors, Stateflow, Simulink.</p>
+      <ul><li>Exactly what the problem statement names</li><li>Needs a MATLAB licence with those toolboxes (check your campus licence)</li><li>Less transferable to a real robot later</li></ul>
+    </div>
+    <div class="vcol">
+      <h4>B · Gazebo + ROS 2 only</h4>
+      <p>Free, open-source, runs on your Ubuntu machine, rendered camera images for a real YOLO.</p>
+      <ul><li>Industry-standard robotics stack</li><li>Off-spec for a MathWorks problem statement</li><li>No native radar sensor (emulate it)</li></ul>
+    </div>
+    <div class="vcol rec">
+      <h4>C · Hybrid <span class="pill">Recommended</span></h4>
+      <p>One Python/ROS 2 autonomy stack. Gazebo is the open 3D twin; MATLAB/RoadRunner covers the named deliverables.</p>
+      <ul><li>Build and iterate fast in Gazebo on Ubuntu</li><li>ROS Toolbox connects Simulink to the same ROS 2 topics</li><li>Replay any run in RoadRunner / Driving Scenario Designer via the CSV/JSON export already in the repo</li></ul>
+    </div>
+  </div>
+
+  <div class="section-title">Pick Your ROS 2 + Gazebo Pair by Ubuntu Version</div>
+  <div class="card">
+    <div class="tbl"><table>
+      <tr><th>Your Ubuntu</th><th>ROS 2</th><th>Gazebo</th><th>Install</th><th>Status</th></tr>
+      <tr><td>24.04 Noble</td><td>Jazzy (LTS)</td><td>Harmonic (LTS)</td><td><code>ros-jazzy-ros-gz</code></td><td class="ok">Recommended · the snippets on this page target this pair</td></tr>
+      <tr><td>22.04 Jammy</td><td>Humble (LTS)</td><td>Fortress (LTS)</td><td><code>ros-humble-ros-gz</code></td><td class="ok">Recommended · plugin names use <code>ignition-gazebo-*</code> instead of <code>gz-sim-*</code></td></tr>
+      <tr><td>22.04 Jammy</td><td>Humble</td><td>Harmonic</td><td><code>ros-humble-ros-gzharmonic</code></td><td class="warnc">Possible, not recommended for beginners</td></tr>
+    </table></div>
+    <p style="margin-top:10px; color:var(--text-dim); font-size:12px;">Check yours with <code>lsb_release -a</code>. Pairings are from the official Gazebo "Installing Gazebo with ROS" page.</p>
+  </div>
+</section>
+
+<!-- ============ ARCHITECTURE ============ -->
+<section class="panel" id="arch" role="tabpanel">
+  <div class="section-title">End-to-End Data Flow</div>
+  <div class="card">
+    <div class="flow">
+      <div class="flow-node">Gazebo sensors<br>Camera · GPU-LiDAR · IMU</div><div class="flow-arrow">→</div>
+      <div class="flow-node b">YOLO detector<br>(IDD-trained)</div><div class="flow-arrow">→</div>
+      <div class="flow-node b">EKF fusion tracker</div><div class="flow-arrow">→</div>
+      <div class="flow-node g">/tracks</div>
+    </div>
+    <div class="flow">
+      <div class="flow-node g">/tracks</div><div class="flow-arrow">→</div>
+      <div class="flow-node b">Multi-modal predictor</div><div class="flow-arrow">→</div>
+      <div class="flow-node b">Decision FSM + A* router</div><div class="flow-arrow">→</div>
+      <div class="flow-node b">Frenet lattice planner</div><div class="flow-arrow">→</div>
+      <div class="flow-node">Pure-pursuit controller</div><div class="flow-arrow">→</div>
+      <div class="flow-node g">/cmd_vel → Ackermann car</div>
+    </div>
+    <div class="flow">
+      <div class="flow-node">Traffic manager<br>(world.py behaviours)</div><div class="flow-arrow">→</div>
+      <div class="flow-node b">gz set_pose</div><div class="flow-arrow">→</div>
+      <div class="flow-node g">Autos · buses · cattle · pedestrians move in Gazebo</div>
+    </div>
+  </div>
+
+  <div class="section-title">One Stack, Three Front-Ends</div>
+  <div class="card">
+    <div class="tbl"><table>
+      <tr><th>Module</th><th>Python (done)</th><th>Gazebo / ROS 2</th><th>MATLAB / Simulink</th></tr>
+      <tr><td>World &amp; agents</td><td><code>av/world.py</code></td><td>SDF worlds + <code>traffic_manager</code> node</td><td>RoadRunner scene + scenario</td></tr>
+      <tr><td>Sensors</td><td><code>av/sensors.py</code></td><td>gz camera / gpu_lidar / imu + radar emulator node</td><td>visionDetectionGenerator, drivingRadarDataGenerator, lidarPointCloudGenerator</td></tr>
+      <tr><td>Fusion</td><td><code>av/tracker.py</code></td><td><code>fusion_tracker</code> node (same code)</td><td>Multi-Object Tracker block</td></tr>
+      <tr><td>Prediction</td><td><code>av/prediction.py</code></td><td><code>predictor</code> node</td><td>MATLAB Function block / Deep Learning Toolbox LSTM</td></tr>
+      <tr><td>Decision</td><td><code>av/behavior.py</code> + <code>av/router.py</code></td><td><code>behavior_fsm</code> node</td><td>Stateflow chart + Navigation Toolbox</td></tr>
+      <tr><td>Local planner</td><td><code>av/planner.py</code></td><td><code>lattice_planner</code> node</td><td>trajectoryOptimalFrenet / MATLAB Function</td></tr>
+      <tr><td>Vehicle</td><td><code>av/vehicle.py</code></td><td>AckermannSteering system (physics)</td><td>Vehicle Body 3DOF / bicycle model</td></tr>
+    </table></div>
+  </div>
+  <div class="callout note">The algorithm code does not change between front-ends. The ROS 2 nodes are thin wrappers that turn topics into the Python objects the modules already use. A bug fixed once is fixed in all three.</div>
+</section>
+
+<!-- ============ GAZEBO TWIN ============ -->
+<section class="panel" id="gazebo" role="tabpanel">
+  <div class="section-title">What the Gazebo Twin Adds</div>
+  <div class="grid2">
+    <div class="card"><h3>Real sensor data</h3><p>Rendered camera frames and simulated LiDAR point clouds replace the idealised detection lists. A YOLO model then has to actually find the auto-rickshaw in pixels, including at dusk and when it is half hidden behind a bus.</p></div>
+    <div class="card"><h3>Physics</h3><p>The ego car is a real 4-wheel rigid body with Ackermann steering, tyre friction and suspension. Potholes, speed breakers and camber become physical, not just a cost term.</p></div>
+    <div class="card"><h3>3D demo footage</h3><p>A chase-camera and bird's-eye view of a car weaving past a cow on a village road is a far stronger demo video than 2D plots.</p></div>
+    <div class="card"><h3>Sim-to-real path</h3><p>The same ROS 2 graph can later drive a scale-model car or a Jetson-based UGV without changing node code.</p></div>
+  </div>
+
+  <div class="section-title">Workspace Layout</div>
+  <div class="codebox"><div class="cap"><span>~/bharat_ws/src</span><button class="copy" data-copy="ws">Copy</button></div>
+<pre id="ws">bharat_ws/src/
+├── bharat_description/        <span class="c"># the ego car</span>
+│   ├── models/ego_car/model.sdf         <span class="c"># chassis, 4 wheels, Ackermann, sensors</span>
+│   └── meshes/                          <span class="c"># hatchback .dae/.glb (optional visual)</span>
+├── bharat_worlds/             <span class="c"># the 6 scenario worlds</span>
+│   ├── worlds/s1_village.sdf ... s6_dartout.sdf
+│   ├── models/                          <span class="c"># auto_rickshaw, bus, truck, tractor, cow,</span>
+│   │                                    <span class="c"># pushcart, bullock_cart, pothole, bush, shop_row</span>
+│   └── scripts/gen_world.py             <span class="c"># road.json → SDF (roads, potholes, buildings)</span>
+├── bharat_bringup/
+│   ├── launch/sim.launch.py             <span class="c"># gz sim + bridge + stack + rviz</span>
+│   └── config/bridge.yaml, stack.yaml
+└── bharat_av/                 <span class="c"># ROS 2 wrappers around the existing av/ package</span>
+    ├── bharat_av/av/                    <span class="c"># ← copy of adaptive_av/av (unchanged)</span>
+    └── bharat_av/nodes/
+        traffic_manager.py  radar_emulator.py  yolo_detector.py
+        fusion_tracker.py   predictor.py       behavior_fsm.py
+        lattice_planner.py  controller.py      metrics_logger.py</pre></div>
+
+  <div class="section-title">Install (Ubuntu 24.04 · Jazzy · Harmonic)</div>
+  <div class="codebox"><div class="cap"><span>terminal</span><button class="copy" data-copy="inst">Copy</button></div>
+<pre id="inst"><span class="c"># 1. ROS 2 Jazzy (follow docs.ros.org for the apt source), then:</span>
+sudo apt update
+sudo apt install ros-jazzy-desktop ros-jazzy-ros-gz ros-jazzy-rviz2 \
+                 python3-colcon-common-extensions
+<span class="c"># 2. Python deps for the stack + perception</span>
+pip install numpy scipy ultralytics --break-system-packages
+<span class="c"># 3. Build the workspace</span>
+mkdir -p ~/bharat_ws/src &amp;&amp; cd ~/bharat_ws
+colcon build --symlink-install &amp;&amp; source install/setup.bash
+<span class="c"># 4. Smoke test Gazebo on its own</span>
+gz sim shapes.sdf</pre></div>
+
+  <div class="section-title">Build Roads Without Lane Markings</div>
+  <div class="card">
+    <p>Reuse the road network you already have. <code>python3 export_matlab.py</code> writes <code>road.json</code> for every scenario (nodes, edges, widths, potholes, buildings). A small generator turns it into SDF:</p>
+    <ul>
+      <li><b>Road surface:</b> one thin box per edge segment, with an asphalt or packed-earth texture and <b>no painted lines</b>. Put a 0.5 m dusty shoulder strip either side so the edge is visually blurred, which is what makes edge estimation hard.</li>
+      <li><b>Potholes:</b> short cylinders sunk 5–8 cm into a slightly raised road mesh, or a heightmap for the village road. The car feels them physically through the suspension.</li>
+      <li><b>Occluders:</b> the same polygons as <code>world.occluders</code> become shop rows, compound walls and bushes. Camera and LiDAR occlusion now happens for real, not by ray-casting maths.</li>
+      <li><b>Village terrain:</b> a heightmap (DEM tile or a Blender-sculpted ditch) under the road gives camber and uneven shoulders.</li>
+      <li><b>Lighting:</b> one world file per time of day (<code>&lt;sun&gt;</code> direction plus ambient) to stress the camera at noon glare and dusk.</li>
+    </ul>
+  </div>
+  <div class="codebox"><div class="cap"><span>bharat_worlds/scripts/gen_world.py (core idea)</span><button class="copy" data-copy="gen">Copy</button></div>
+<pre id="gen"><span class="k">import</span> json, math, sys
+road = json.load(open(sys.argv[1]))                 <span class="c"># matlab/data/S1_village/road.json</span>
+out = []
+<span class="k">for</span> e <span class="k">in</span> road[<span class="s">"edges"</span>]:
+    pts = e[<span class="s">"pts"</span>]
+    <span class="k">for</span> (x0, y0), (x1, y1) <span class="k">in</span> zip(pts[:-1], pts[1:]):
+        L = math.hypot(x1-x0, y1-y0); yaw = math.atan2(y1-y0, x1-x0)
+        cx, cy = (x0+x1)/2, (y0+y1)/2
+        out.append(f<span class="s">'''&lt;model name="road_{len(out)}"&gt;&lt;static&gt;true&lt;/static&gt;
+  &lt;pose&gt;{cx} {cy} 0.02 0 0 {yaw}&lt;/pose&gt;
+  &lt;link name="l"&gt;&lt;collision name="c"&gt;&lt;geometry&gt;&lt;box&gt;&lt;size&gt;{L+0.4} {e["width"]} 0.04&lt;/size&gt;&lt;/box&gt;&lt;/geometry&gt;&lt;/collision&gt;
+  &lt;visual name="v"&gt;&lt;geometry&gt;&lt;box&gt;&lt;size&gt;{L+0.4} {e["width"]} 0.04&lt;/size&gt;&lt;/box&gt;&lt;/geometry&gt;
+  &lt;material&gt;&lt;diffuse&gt;0.36 0.36 0.35 1&lt;/diffuse&gt;&lt;/material&gt;&lt;/visual&gt;&lt;/link&gt;&lt;/model&gt;'''</span>)
+<span class="c"># + potholes, occluder polygons (extruded boxes), sun/lighting, then wrap in &lt;world&gt;</span>
+print(<span class="s">"\n"</span>.join(out))</pre></div>
+
+  <div class="section-title">Required World Plugins (Harmonic)</div>
+  <div class="codebox"><div class="cap"><span>top of every world .sdf</span><button class="copy" data-copy="wplug">Copy</button></div>
+<pre id="wplug">&lt;world name="indian_roads"&gt;
+  &lt;physics type="ode"&gt;&lt;max_step_size&gt;0.005&lt;/max_step_size&gt;&lt;real_time_factor&gt;1.0&lt;/real_time_factor&gt;&lt;/physics&gt;
+  &lt;plugin filename="gz-sim-physics-system"        name="gz::sim::systems::Physics"/&gt;
+  &lt;plugin filename="gz-sim-user-commands-system"  name="gz::sim::systems::UserCommands"/&gt;  <span class="c">&lt;!-- set_pose service --&gt;</span>
+  &lt;plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/&gt;
+  &lt;plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors"&gt;
+    &lt;render_engine&gt;ogre2&lt;/render_engine&gt;
+  &lt;/plugin&gt;
+  &lt;plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"/&gt;
+  &lt;plugin filename="gz-sim-pose-publisher-system" name="gz::sim::systems::PosePublisher"&gt;
+    &lt;publish_model_pose&gt;true&lt;/publish_model_pose&gt;  <span class="c">&lt;!-- ground truth for metrics --&gt;</span>
+  &lt;/plugin&gt;
+  ...
+&lt;/world&gt;</pre></div>
+  <div class="callout note">On Humble + Fortress, swap the prefix: <code>ignition-gazebo-physics-system</code> with <code>ignition::gazebo::systems::Physics</code>, and so on. Everything else on this page carries over.</div>
+</section>
+
+<!-- ============ VEHICLE & ACTORS ============ -->
+<section class="panel" id="gzmodels" role="tabpanel">
+  <div class="section-title">The Ego Car (model.sdf)</div>
+  <div class="card">
+    <p>A hatchback-sized rigid body: 4.4 m × 1.8 m, wheelbase 2.7 m, about 1,100 kg. It matches the Python bicycle model so the planner's limits (33° steering, 3.2 m/s² lateral) stay valid. Steering uses the Ackermann system; the car listens to a Twist on its <code>cmd_vel</code> topic.</p>
+  </div>
+  <div class="codebox"><div class="cap"><span>bharat_description/models/ego_car/model.sdf (excerpt)</span><button class="copy" data-copy="ego">Copy</button></div>
+<pre id="ego">&lt;model name="ego_car"&gt;
+  &lt;link name="chassis"&gt;
+    &lt;inertial&gt;&lt;mass&gt;1100&lt;/mass&gt;
+      &lt;inertia&gt;&lt;ixx&gt;450&lt;/ixx&gt;&lt;iyy&gt;1900&lt;/iyy&gt;&lt;izz&gt;2100&lt;/izz&gt;&lt;/inertia&gt;&lt;/inertial&gt;
+    &lt;collision name="body"&gt;&lt;geometry&gt;&lt;box&gt;&lt;size&gt;4.4 1.8 1.2&lt;/size&gt;&lt;/box&gt;&lt;/geometry&gt;&lt;/collision&gt;
+    <span class="c">&lt;!-- sensors live on the chassis link --&gt;</span>
+    &lt;sensor name="front_cam" type="camera"&gt;
+      &lt;pose&gt;1.6 0 1.25 0 0.05 0&lt;/pose&gt;&lt;update_rate&gt;15&lt;/update_rate&gt;&lt;topic&gt;camera&lt;/topic&gt;
+      &lt;camera&gt;&lt;horizontal_fov&gt;1.92&lt;/horizontal_fov&gt;
+        &lt;image&gt;&lt;width&gt;1280&lt;/width&gt;&lt;height&gt;720&lt;/height&gt;&lt;/image&gt;
+        &lt;clip&gt;&lt;near&gt;0.1&lt;/near&gt;&lt;far&gt;120&lt;/far&gt;&lt;/clip&gt;&lt;/camera&gt;
+    &lt;/sensor&gt;
+    &lt;sensor name="roof_lidar" type="gpu_lidar"&gt;
+      &lt;pose&gt;0 0 1.9 0 0 0&lt;/pose&gt;&lt;update_rate&gt;10&lt;/update_rate&gt;&lt;topic&gt;lidar&lt;/topic&gt;
+      &lt;lidar&gt;&lt;scan&gt;
+        &lt;horizontal&gt;&lt;samples&gt;900&lt;/samples&gt;&lt;min_angle&gt;-3.1416&lt;/min_angle&gt;&lt;max_angle&gt;3.1416&lt;/max_angle&gt;&lt;/horizontal&gt;
+        &lt;vertical&gt;&lt;samples&gt;16&lt;/samples&gt;&lt;min_angle&gt;-0.26&lt;/min_angle&gt;&lt;max_angle&gt;0.26&lt;/max_angle&gt;&lt;/vertical&gt;
+      &lt;/scan&gt;&lt;range&gt;&lt;min&gt;0.3&lt;/min&gt;&lt;max&gt;50&lt;/max&gt;&lt;/range&gt;&lt;/lidar&gt;
+    &lt;/sensor&gt;
+    &lt;sensor name="imu" type="imu"&gt;&lt;update_rate&gt;100&lt;/update_rate&gt;&lt;topic&gt;imu&lt;/topic&gt;&lt;/sensor&gt;
+  &lt;/link&gt;
+  <span class="c">&lt;!-- 4 wheel links + front_left/right_steering_joint (revolute, z) + wheel joints (revolute, y) --&gt;</span>
+  &lt;plugin filename="gz-sim-ackermann-steering-system" name="gz::sim::systems::AckermannSteering"&gt;
+    &lt;left_joint&gt;front_left_wheel_joint&lt;/left_joint&gt;   &lt;left_joint&gt;rear_left_wheel_joint&lt;/left_joint&gt;
+    &lt;right_joint&gt;front_right_wheel_joint&lt;/right_joint&gt; &lt;right_joint&gt;rear_right_wheel_joint&lt;/right_joint&gt;
+    &lt;left_steering_joint&gt;front_left_steering_joint&lt;/left_steering_joint&gt;
+    &lt;right_steering_joint&gt;front_right_steering_joint&lt;/right_steering_joint&gt;
+    &lt;kingpin_width&gt;1.5&lt;/kingpin_width&gt;&lt;steering_limit&gt;0.576&lt;/steering_limit&gt;  <span class="c">&lt;!-- 33° --&gt;</span>
+    &lt;wheel_base&gt;2.7&lt;/wheel_base&gt;&lt;wheel_separation&gt;1.55&lt;/wheel_separation&gt;&lt;wheel_radius&gt;0.31&lt;/wheel_radius&gt;
+    &lt;max_velocity&gt;25&lt;/max_velocity&gt;&lt;max_acceleration&gt;2.5&lt;/max_acceleration&gt;
+    &lt;topic&gt;/model/ego_car/cmd_vel&lt;/topic&gt;
+  &lt;/plugin&gt;
+  &lt;plugin filename="gz-sim-odometry-publisher-system" name="gz::sim::systems::OdometryPublisher"&gt;
+    &lt;odom_frame&gt;odom&lt;/odom_frame&gt;&lt;robot_base_frame&gt;ego_car&lt;/robot_base_frame&gt;
+  &lt;/plugin&gt;
+&lt;/model&gt;</pre></div>
+  <div class="callout warn"><b>Radar:</b> Gazebo has no built-in automotive radar sensor. Emulate it with a <code>radar_emulator</code> node. It reads ground-truth poses of other models, keeps those inside ±20° / 120 m that are not hidden behind occluders (optionally checked with a sparse gpu_lidar), and adds range, bearing and radial-velocity noise. This is the same maths as <code>sensors.py</code>. Say this openly in the report.</div>
+
+  <div class="section-title">Indian Road-User Models</div>
+  <div class="card">
+    <div class="tbl"><table>
+      <tr><th>Class</th><th>Size (L×W×H m)</th><th>How to model</th><th>Moved by</th></tr>
+      <tr><td>Auto-rickshaw</td><td class="num">2.8×1.4×1.8</td><td>Low-poly mesh (Blender / CC0 asset) or a box body with 3 wheels; yellow-green livery</td><td rowspan="6">traffic_manager → set_pose</td></tr>
+      <tr><td>Bus / truck / tractor</td><td class="num">11×2.6×3.2</td><td>Box plus textured mesh; collision = one box</td></tr>
+      <tr><td>Two-wheeler, bicycle</td><td class="num">2.0×0.8×1.4</td><td>Mesh with a seated rider; thin profile stresses LiDAR</td></tr>
+      <tr><td>Cow / cattle</td><td class="num">2.2×0.9×1.5</td><td>Low-poly animal mesh (CC0), 3–4 colour variants</td></tr>
+      <tr><td>Pushcart, bullock cart</td><td class="num">2.0×1.2×1.1</td><td>Simple boxes with a wheel pair, cloth-coloured top</td></tr>
+      <tr><td>Parked/stalled vehicles</td><td class="num">—</td><td>Same meshes, <code>&lt;static&gt;true</code></td></tr>
+      <tr><td>Pedestrians</td><td class="num">0.5×0.5×1.7</td><td>Gazebo <code>&lt;actor&gt;</code> with a walking skin; waypoints from <code>actors.csv</code></td><td>scripted <code>&lt;trajectory&gt;</code> or set_pose</td></tr>
+    </table></div>
+  </div>
+
+  <div class="section-title">Traffic Manager: Reuse Your world.py Behaviours</div>
+  <div class="card">
+    <p>Don't hand-script every vehicle in SDF. Run the <b>same</b> <code>World</code> / <code>PathFollow</code> / <code>Crosser</code> / <code>Wander</code> classes in a ROS 2 node at 20 Hz. Feed it the real ego pose from Gazebo and teleport each agent model to its new pose. Agents keep their Indian behaviours (wander, informal merges, darting, cattle pausing), and scenario seeds stay reproducible.</p>
+  </div>
+  <div class="codebox"><div class="cap"><span>bharat_av/nodes/traffic_manager.py (skeleton)</span><button class="copy" data-copy="tm">Copy</button></div>
+<pre id="tm"><span class="k">import</span> rclpy
+<span class="k">from</span> rclpy.node <span class="k">import</span> Node
+<span class="k">from</span> nav_msgs.msg <span class="k">import</span> Odometry
+<span class="k">from</span> gz.transport13 <span class="k">import</span> Node <span class="k">as</span> GzNode          <span class="c"># Harmonic python bindings</span>
+<span class="k">from</span> gz.msgs10.pose_pb2 <span class="k">import</span> Pose
+<span class="k">from</span> gz.msgs10.boolean_pb2 <span class="k">import</span> Boolean
+<span class="k">from</span> bharat_av.av.scenarios <span class="k">import</span> SCENARIOS
+
+<span class="k">class</span> TrafficManager(Node):
+    <span class="k">def</span> __init__(self):
+        super().__init__(<span class="s">"traffic_manager"</span>)
+        self.declare_parameter(<span class="s">"scenario"</span>, <span class="s">"S5"</span>); self.declare_parameter(<span class="s">"seed"</span>, 0)
+        spec = SCENARIOS[self.get_parameter(<span class="s">"scenario"</span>).value](self.get_parameter(<span class="s">"seed"</span>).value)
+        self.world = spec.world
+        self.world.ego = EgoProxy()                      <span class="c"># x, y, yaw, v, L, W updated from odom</span>
+        <span class="k">for</span> a <span class="k">in</span> self.world.agents:
+            <span class="k">if</span> a.behavior: a.behavior.place(a)
+        self.gz = GzNode()
+        self.create_subscription(Odometry, <span class="s">"/ego/odom"</span>, self.world.ego.update, 10)
+        self.create_timer(0.05, self.tick)
+
+    <span class="k">def</span> tick(self):
+        self.world.step(0.05)
+        <span class="k">for</span> a <span class="k">in</span> self.world.agents:
+            req = Pose(); req.name = f<span class="s">"agent_{a.id}"</span>
+            req.position.x, req.position.y = a.x, a.y
+            req.orientation.z, req.orientation.w = math.sin(a.yaw/2), math.cos(a.yaw/2)
+            self.gz.request(<span class="s">"/world/indian_roads/set_pose"</span>, req, Pose, Boolean, 50)
+<span class="c"># spawn one model per agent at launch (ros_gz_sim create) named agent_&lt;id&gt;</span></pre></div>
+  <div class="callout note">Teleported agents are <b>kinematic</b>: they don't get pushed by physics. That's fine and even desirable, because they behave exactly as scripted. Collisions are measured by <code>metrics_logger</code> from ground-truth poses with the same rectangle test used in Python. With 20–40 agents, one set_pose call per agent per tick is fine. If the real-time factor drops, batch the calls or lower the tick rate to 10 Hz.</div>
+</section>
+
+<!-- ============ SCENARIO WORLDS ============ -->
+<section class="panel" id="gzworlds" role="tabpanel">
+  <div class="section-title">Six Worlds, Mapped From the Validated Python Scenarios</div>
+  <div class="card">
+    <div class="tbl"><table>
+      <tr><th>World</th><th>Geometry</th><th>Key 3D assets</th><th>What it proves</th><th>Detail level</th></tr>
+      <tr><td><b>S1 · Village road</b></td><td>7.5 m, curvy, heightmap shoulders, 280 m</td><td>6 potholes (physical), bullock cart, bicycle, pedestrians, bus, cattle at the roadside, mud shoulder</td><td>Unmarked edge handling, oncoming squeeze, pothole weaving, no blind overtakes</td><td class="ok">Detailed scene #1</td></tr>
+      <tr><td><b>S2 · Urban junction</b></td><td>4-way, 12 m arms, shop rows on all corners</td><td>Stopped bus at stop, jaywalkers, diagonal and wrong-way two-wheelers, oncoming bus</td><td>Right turn across traffic, occlusion reasoning, creeping through a junction</td><td class="ok">Detailed scene #2</td></tr>
+      <tr><td><b>S3 · Highway merge</b></td><td>11 m carriageway + slip road</td><td>Tractor, truck, merging bus, fast car, wrong-way rider, stalled car, pedestrian crossing</td><td>High-speed replanning, informal merge, overtaking</td><td>Standard</td></tr>
+      <tr><td><b>S4 · Market</b></td><td>7.5 m lane + parallel detour grid</td><td>Stalls/awnings, pushcarts, parked autos, cow, delivery truck blockage</td><td>Dense crowds, <b>A* reroute</b>, honk-and-creep</td><td>Standard</td></tr>
+      <tr><td><b>S5 · Cattle crossing</b></td><td>8 m rural road, bushes both sides</td><td>Herd of 5, bushes (occluders), oncoming truck, following car</td><td>Sudden VRU from occlusion, hard braking without being rear-ended</td><td>Standard</td></tr>
+      <tr><td><b>S6 · Dart-out</b> (bonus)</td><td>10 m street</td><td>Parked bus, child actor, oncoming auto</td><td>Occlusion speed cap pays off</td><td>Standard</td></tr>
+    </table></div>
+  </div>
+
+  <div class="section-title">Top View · S1 Village Road Twin</div>
+  <div class="twinmap" role="img" aria-label="Top-view sketch of the village road world: curvy unmarked road with potholes, parked bullock cart, oncoming bus, cattle at roadside, and the ego car's sensor coverage.">
+    <svg viewBox="0 0 880 250" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="880" height="250" fill="#0a1a12"/>
+      <path d="M20 150 C 140 80, 260 60, 380 110 S 620 190, 860 120" fill="none" stroke="#3a3a36" stroke-width="46" stroke-linecap="round"/>
+      <path d="M20 150 C 140 80, 260 60, 380 110 S 620 190, 860 120" fill="none" stroke="#5b4a33" stroke-width="58" stroke-opacity="0.35" stroke-linecap="round"/>
+      <path d="M20 150 C 140 80, 260 60, 380 110 S 620 190, 860 120" fill="none" stroke="#4a4a46" stroke-width="44" stroke-linecap="round"/>
+      <circle cx="190" cy="92" r="4.5" fill="#1d1712"/><circle cx="204" cy="85" r="4" fill="#1d1712"/><circle cx="560" cy="160" r="5" fill="#1d1712"/><circle cx="700" cy="151" r="4.5" fill="#1d1712"/>
+      <path d="M120 128 L 330 40 L 330 190 Z" fill="#4dd8e6" fill-opacity="0.07" stroke="#4dd8e6" stroke-opacity="0.35"/>
+      <rect x="96" y="112" width="30" height="13" rx="2" fill="#4dd8e6" transform="rotate(-24 111 118)"/>
+      <rect x="400" y="96" width="26" height="11" rx="2" fill="#a0522d" transform="rotate(10 413 101)"/>
+      <rect x="468" y="132" width="64" height="16" rx="2" fill="#f58518" transform="rotate(14 500 140)"/>
+      <rect x="300" y="84" width="12" height="5" rx="1" fill="#88d27a" transform="rotate(8 306 86)"/>
+      <circle cx="350" cy="86" r="3.5" fill="#e45756"/>
+      <rect x="640" y="186" width="18" height="8" rx="2" fill="#7f4f24"/>
+      <path d="M126 116 C 200 90, 260 84, 300 96" fill="none" stroke="#5fe08a" stroke-width="2.5"/>
+      <text x="92" y="150" fill="#4dd8e6" font-size="11">ego car</text>
+      <text x="200" y="36" fill="#8aa6ab" font-size="10">camera 80 m / ±55°</text>
+      <text x="382" y="86" fill="#cfe8ec" font-size="10">bullock cart</text>
+      <text x="486" y="178" fill="#ffb454" font-size="10">oncoming bus</text>
+      <text x="622" y="214" fill="#cfe8ec" font-size="10">cattle (dart hypothesis)</text>
+      <text x="160" y="76" fill="#cfe8ec" font-size="10">potholes</text>
+      <text x="236" y="112" fill="#5fe08a" font-size="10">planned path</text>
+      <text x="20" y="238" fill="#8aa6ab" font-size="10">No lane markings · dusty shoulder · heightmap camber · 7.5 m carriageway</text>
+    </svg>
+  </div>
+
+  <div class="section-title">Stress Variants per World</div>
+  <div class="card">
+    <ul>
+      <li><b>Lighting:</b> noon (hard shadows under trees), dusk (low sun into the camera), night (headlight only). Same world, <code>&lt;sun&gt;</code> and ambient swapped.</li>
+      <li><b>Weather:</b> fog (<code>&lt;scene&gt;&lt;fog&gt;</code>) cuts camera range, so check that radar and LiDAR carry the tracker.</li>
+      <li><b>Seeds:</b> the traffic manager seed randomises speeds, trigger distances and positions, exactly as in the Python Monte-Carlo, so you report rates rather than a single tuned run.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ ROS 2 NODES ============ -->
+<section class="panel" id="ros" role="tabpanel">
+  <div class="section-title">Node Graph</div>
+  <div class="card">
+    <div class="tbl"><table>
+      <tr><th>Node</th><th>Subscribes</th><th>Publishes</th><th>Rate</th></tr>
+      <tr><td><code>ros_gz_bridge</code></td><td>gz: camera, lidar, imu, odom</td><td><code>/camera/image</code> <code>/lidar/points</code> <code>/imu</code> <code>/ego/odom</code></td><td class="num">sensor rate</td></tr>
+      <tr><td><code>traffic_manager</code></td><td><code>/ego/odom</code></td><td>gz set_pose (agents), <code>/gt/agents</code></td><td class="num">20 Hz</td></tr>
+      <tr><td><code>yolo_detector</code></td><td><code>/camera/image</code></td><td><code>/det/camera</code> (class + bbox + range from LiDAR)</td><td class="num">10–15 Hz</td></tr>
+      <tr><td><code>lidar_clusterer</code></td><td><code>/lidar/points</code></td><td><code>/det/lidar</code> (centroid, size, heading)</td><td class="num">10 Hz</td></tr>
+      <tr><td><code>radar_emulator</code></td><td><code>/gt/agents</code>, <code>/ego/odom</code></td><td><code>/det/radar</code> (range, bearing, v<sub>r</sub>)</td><td class="num">10 Hz</td></tr>
+      <tr><td><code>fusion_tracker</code></td><td><code>/det/*</code></td><td><code>/tracks</code></td><td class="num">10 Hz</td></tr>
+      <tr><td><code>predictor</code></td><td><code>/tracks</code></td><td><code>/predictions</code> (hard + soft hypotheses)</td><td class="num">10 Hz</td></tr>
+      <tr><td><code>behavior_fsm</code></td><td><code>/tracks</code>, <code>/ego/odom</code></td><td><code>/behavior</code> (state, v_des, d_pref), <code>/route</code></td><td class="num">10 Hz</td></tr>
+      <tr><td><code>lattice_planner</code></td><td><code>/predictions</code>, <code>/behavior</code>, <code>/route</code></td><td><code>/plan</code> (+ candidates for RViz)</td><td class="num">5 Hz + events</td></tr>
+      <tr><td><code>controller</code></td><td><code>/plan</code>, <code>/ego/odom</code></td><td><code>/model/ego_car/cmd_vel</code></td><td class="num">20 Hz</td></tr>
+      <tr><td><code>metrics_logger</code></td><td>everything + <code>/gt/*</code></td><td>CSV/JSON (same metrics as Python)</td><td class="num">20 Hz</td></tr>
+    </table></div>
+  </div>
+
+  <div class="section-title">Bridge Config</div>
+  <div class="codebox"><div class="cap"><span>bharat_bringup/config/bridge.yaml</span><button class="copy" data-copy="br">Copy</button></div>
+<pre id="br">- ros_topic_name: "/camera/image"
+  gz_topic_name: "/camera"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+- ros_topic_name: "/lidar/points"
+  gz_topic_name: "/lidar/points"
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "gz.msgs.PointCloudPacked"
+  direction: GZ_TO_ROS
+- ros_topic_name: "/imu"
+  gz_topic_name: "/imu"
+  ros_type_name: "sensor_msgs/msg/Imu"
+  gz_type_name: "gz.msgs.IMU"
+  direction: GZ_TO_ROS
+- ros_topic_name: "/ego/odom"
+  gz_topic_name: "/model/ego_car/odometry"
+  ros_type_name: "nav_msgs/msg/Odometry"
+  gz_type_name: "gz.msgs.Odometry"
+  direction: GZ_TO_ROS
+- ros_topic_name: "/model/ego_car/cmd_vel"
+  gz_topic_name: "/model/ego_car/cmd_vel"
+  ros_type_name: "geometry_msgs/msg/Twist"
+  gz_type_name: "gz.msgs.Twist"
+  direction: ROS_TO_GZ
+- ros_topic_name: "/clock"
+  gz_topic_name: "/clock"
+  ros_type_name: "rosgraph_msgs/msg/Clock"
+  gz_type_name: "gz.msgs.Clock"
+  direction: GZ_TO_ROS</pre></div>
+
+  <div class="section-title">Launch</div>
+  <div class="codebox"><div class="cap"><span>bharat_bringup/launch/sim.launch.py (excerpt)</span><button class="copy" data-copy="ln">Copy</button></div>
+<pre id="ln"><span class="k">from</span> launch <span class="k">import</span> LaunchDescription
+<span class="k">from</span> launch.actions <span class="k">import</span> IncludeLaunchDescription, DeclareLaunchArgument
+<span class="k">from</span> launch.substitutions <span class="k">import</span> LaunchConfiguration
+<span class="k">from</span> launch_ros.actions <span class="k">import</span> Node
+<span class="k">from</span> ament_index_python.packages <span class="k">import</span> get_package_share_directory <span class="k">as</span> share
+
+<span class="k">def</span> generate_launch_description():
+    world = LaunchConfiguration(<span class="s">"world"</span>)
+    gz = IncludeLaunchDescription(
+        f<span class="s">"{share('ros_gz_sim')}/launch/gz_sim.launch.py"</span>,
+        launch_arguments={<span class="s">"gz_args"</span>: [<span class="s">"-r "</span>, world]}.items())
+    bridge = Node(package=<span class="s">"ros_gz_bridge"</span>, executable=<span class="s">"parameter_bridge"</span>,
+        parameters=[{<span class="s">"config_file"</span>: f<span class="s">"{share('bharat_bringup')}/config/bridge.yaml"</span>}])
+    stack = [Node(package=<span class="s">"bharat_av"</span>, executable=n, parameters=[{<span class="s">"use_sim_time"</span>: True}])
+             <span class="k">for</span> n <span class="k">in</span> (<span class="s">"traffic_manager"</span>, <span class="s">"yolo_detector"</span>, <span class="s">"lidar_clusterer"</span>, <span class="s">"radar_emulator"</span>,
+                       <span class="s">"fusion_tracker"</span>, <span class="s">"predictor"</span>, <span class="s">"behavior_fsm"</span>,
+                       <span class="s">"lattice_planner"</span>, <span class="s">"controller"</span>, <span class="s">"metrics_logger"</span>)]
+    <span class="k">return</span> LaunchDescription([DeclareLaunchArgument(<span class="s">"world"</span>, default_value=<span class="s">"s1_village.sdf"</span>),
+                              gz, bridge, *stack])
+
+<span class="c"># run:  ros2 launch bharat_bringup sim.launch.py world:=s5_cattle.sdf</span></pre></div>
+
+  <div class="section-title">Wrapping an Existing Module (pattern)</div>
+  <div class="codebox"><div class="cap"><span>bharat_av/nodes/lattice_planner.py (pattern)</span><button class="copy" data-copy="lp">Copy</button></div>
+<pre id="lp"><span class="k">from</span> bharat_av.av.planner <span class="k">import</span> LatticePlanner     <span class="c"># unchanged Python module</span>
+
+<span class="k">class</span> PlannerNode(Node):
+    <span class="k">def</span> __init__(self):
+        super().__init__(<span class="s">"lattice_planner"</span>)
+        self.planner = LatticePlanner()
+        self.create_subscription(PredictionArray, <span class="s">"/predictions"</span>, self.on_pred, 10)
+        self.create_subscription(Behavior, <span class="s">"/behavior"</span>, self.on_beh, 10)
+        self.create_timer(0.2, self.periodic)             <span class="c"># 5 Hz periodic</span>
+        self.pub = self.create_publisher(Path, <span class="s">"/plan"</span>, 10)
+
+    <span class="k">def</span> on_pred(self, msg):
+        self.hyps = from_msg(msg)                          <span class="c"># → list[Hypothesis]</span>
+        <span class="k">if</span> <span class="k">not</span> self.planner.still_valid(self.plan, self.hyps, self.t_since_plan()):
+            self.replan(<span class="s">"plan_invalid"</span>)                     <span class="c"># event-triggered, same as sim.py</span></pre></div>
+  <div class="callout note">Define small custom messages (<code>Track</code>, <code>Hypothesis</code>, <code>Behavior</code>) in a <code>bharat_msgs</code> package. Keep the planner's inner loop in NumPy. It already runs at 20–60 ms on average, well inside the 200 ms cycle.</div>
+</section>
+
+<!-- ============ PERCEPTION ============ -->
+<section class="panel" id="perception" role="tabpanel">
+  <div class="section-title">Camera Detection for Indian Classes</div>
+  <div class="grid2">
+    <div class="card">
+      <h3>Model</h3>
+      <p>YOLO (Ultralytics, small variant for speed) with classes: car, bus, truck, tractor, auto-rickshaw, motorcycle, bicycle, person, animal/cattle, pushcart. It publishes a bounding box, class and confidence. Range comes from LiDAR points inside the box (frustum association).</p>
+    </div>
+    <div class="card">
+      <h3>Data</h3>
+      <ul>
+        <li><b>IDD, the India Driving Dataset</b> (IIIT Hyderabad): Indian roads, includes auto-rickshaws and animals</li>
+        <li>Synthetic frames from your own Gazebo worlds, auto-labelled from ground-truth poses (free, perfectly labelled, covers dusk and fog)</li>
+        <li>Fine-tune on the mix; report mAP on held-out IDD <i>and</i> synthetic data</li>
+      </ul>
+    </div>
+  </div>
+  <div class="section-title">LiDAR &amp; Radar</div>
+  <div class="card">
+    <ul>
+      <li><b>LiDAR clusterer:</b> remove the ground plane (RANSAC or height threshold), Euclidean clustering, then an L-shape box fit for size and heading. Heading from box fitting is what fixed the long-bus yaw issue in the Python stack.</li>
+      <li><b>Radar emulator:</b> the same noise model as <code>sensors.py</code>. It gives long range and radial velocity, and sees pedestrians and cattle poorly.</li>
+      <li><b>Fusion:</b> <code>tracker.py</code> unchanged. The inputs are now real detections instead of sampled ones, so expect lower camera recall at dusk. That is the point of the test.</li>
+    </ul>
+  </div>
+  <div class="callout note">Keep the Python sensor models as a fast "perfect-perception minus noise" baseline. Report both. The gap between them shows how much perception quality costs the planner, and judges tend to ask about that.</div>
+</section>
+
+<!-- ============ PLANNER ============ -->
+<section class="panel" id="planner" role="tabpanel">
+  <div class="section-title">Lane-Free Lattice Planner</div>
+  <div class="card">
+    <div class="tbl"><table>
+      <tr><th>Element</th><th>Setting</th><th>Why</th></tr>
+      <tr><td>Lateral sampling</td><td>Every 0.5 m across the drivable width (ray-cast from road geometry)</td><td>No lanes: use any gap past a pushcart or cow</td></tr>
+      <tr><td>Speed profiles</td><td>Keep-speed quartics (7 targets × 2 horizons) + 3 brake ramps</td><td>Covers cruise, follow, stop and emergency</td></tr>
+      <tr><td>Hard constraint</td><td>5-circle footprint vs constant-velocity prediction with growing uncertainty, margin 0.2 m + 0.08·t + 0.035·(v<sub>ego</sub>+v<sub>obj</sub>)</td><td>Guaranteed clearance at close range</td></tr>
+      <tr><td>Hard horizon</td><td>1.8 s + closing speed / 4, limited to 2.2–4.8 s</td><td>Short for walkers, long for an oncoming bus</td></tr>
+      <tr><td>Soft costs</td><td>Swerve, stop and dart hypotheses; proximity; potholes; road edge; keep-left; consistency</td><td>Caution without freezing</td></tr>
+      <tr><td>Indian rules</td><td>No blind overtakes (ray-traced sight ≥ 25 + 5·(v+8) m), never stop in an oncoming vehicle's path, occlusion speed cap, junction creep, honk-and-creep</td><td>Fixes the standoffs and blind-overtake failures found in testing</td></tr>
+      <tr><td>Replanning</td><td>5 Hz periodic + immediately on new object, invalid plan or reroute; starts from the previous plan's state</td><td>Fast reaction, smooth paths</td></tr>
+      <tr><td>Fallback</td><td>Minimum-risk manoeuvre: hardest brake with the least-violating steer</td><td>Always outputs something safe</td></tr>
+    </table></div>
+  </div>
+  <div class="section-title">In Gazebo, Retune Only These</div>
+  <div class="card">
+    <ul>
+      <li><code>kappa_max</code>, <code>alat_max</code>: match the SDF steering limit and tyre friction</li>
+      <li>Controller lookahead and speed PI gains: the physical car has real inertia and wheel slip</li>
+      <li>Uncertainty rates in <code>prediction.py</code>: real detections are noisier than the Python sensor model</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ MATLAB TRACK ============ -->
+<section class="panel" id="matlab" role="tabpanel">
+  <div class="section-title">Covering the MathWorks Deliverables</div>
+  <div class="card">
+    <div class="tbl"><table>
+      <tr><th>Expected deliverable</th><th>How we cover it</th><th>Status</th></tr>
+      <tr><td>Simulation pipeline in MATLAB &amp; Simulink</td><td>Port planner/FSM into MATLAB Function + Stateflow; sensors and tracker from Automated Driving Toolbox; vehicle = bicycle / Vehicle Body 3DOF</td><td class="warnc">To do</td></tr>
+      <tr><td>2 detailed RoadRunner scenes (village, intersection)</td><td>Import <code>road.json</code> geometry, dress with RoadRunner assets, export scenario</td><td class="warnc">To do</td></tr>
+      <tr><td>All 5 scenarios tested</td><td><code>replay_scenario.m</code> rebuilds every run in <code>drivingScenario</code> from the exported CSV/JSON</td><td class="ok">Export ready</td></tr>
+      <tr><td>Metrics: replanning latency, smoothness, completion</td><td>Already computed in Python (48 runs); recompute in MATLAB for the ported model</td><td class="ok">Python done</td></tr>
+      <tr><td>Technical report + demo video</td><td><code>REPORT.md</code> + 2D demo MP4 now; add Gazebo/RoadRunner 3D footage</td><td class="ok">Draft done</td></tr>
+    </table></div>
+  </div>
+  <div class="section-title">Bridge Simulink ↔ Gazebo (optional)</div>
+  <div class="card">
+    <p>ROS Toolbox lets a Simulink model publish and subscribe to ROS 2 topics. You can run the Stateflow decision chart in Simulink while Gazebo supplies <code>/tracks</code> and <code>/ego/odom</code>. This is a clean way to show "MATLAB decision logic driving a 3D twin" if your licence includes ROS Toolbox.</p>
+  </div>
+  <div class="callout warn">Check your MATLAB licence early (campus licence or the MathWorks SIH licence, if one is provided). Without Automated Driving Toolbox and RoadRunner, the hybrid plan falls back to Python + Gazebo plus the MATLAB replay script. Tell the organisers if that happens.</div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section class="panel" id="results" role="tabpanel">
+  <div class="section-title">Python Closed-Loop Validation · 6 Scenarios × 8 Seeds</div>
+  <div class="card">
+    <div class="tbl"><table>
+      <tr><th>Scenario</th><th>Completion</th><th>Collisions</th><th>Avg speed</th><th>Min clearance</th><th>Replan mean / p95</th><th>Reaction</th><th>RMS jerk long / lat</th><th>Peak decel</th></tr>
+      <tr><td>S1 Village road</td><td class="warnc">7/8</td><td class="num">0</td><td class="num">18.9 km/h</td><td class="num">0.29 m</td><td class="num">29 / 70 ms</td><td class="num">0.17 s</td><td class="num">3.38 / 2.02</td><td class="num">8.0 m/s²</td></tr>
+      <tr><td>S2 Urban junction</td><td class="ok">8/8</td><td class="num">0</td><td class="num">16.8 km/h</td><td class="num">0.75 m</td><td class="num">60 / 196 ms</td><td class="num">0.22 s</td><td class="num">2.84 / 1.14</td><td class="num">4.5 m/s²</td></tr>
+      <tr><td>S3 Highway merge</td><td class="ok">8/8</td><td class="num">0</td><td class="num">53.4 km/h</td><td class="num">0.18 m</td><td class="num">51 / 103 ms</td><td class="num">0.20 s</td><td class="num">5.17 / 5.20</td><td class="num">8.0 m/s²</td></tr>
+      <tr><td>S4 Market + reroute</td><td class="ok">8/8</td><td class="num">0</td><td class="num">8.4 km/h</td><td class="num">0.08 m</td><td class="num">20 / 64 ms</td><td class="num">0.20 s</td><td class="num">2.86 / 0.79</td><td class="num">6.7 m/s²</td></tr>
+      <tr><td>S5 Cattle crossing</td><td class="ok">8/8</td><td class="num">0</td><td class="num">30.1 km/h</td><td class="num">1.22 m</td><td class="num">36 / 87 ms</td><td class="num">0.19 s</td><td class="num">3.36 / 1.70</td><td class="num">7.0 m/s²</td></tr>
+      <tr><td>S6 Dart-out (bonus)</td><td class="ok">8/8</td><td class="num">0</td><td class="num">26.1 km/h</td><td class="num">0.61 m</td><td class="num">27 / 74 ms</td><td class="num">0.18 s</td><td class="num">2.24 / 1.31</td><td class="num">4.9 m/s²</td></tr>
+    </table></div>
+    <p style="margin-top:10px; font-size:12px; color:var(--text-dim);">Market reroutes: 8/8. Replan compute measured on a 2-core cloud VM in Python/NumPy. Reaction = first detection → confirmed track → new plan.</p>
+  </div>
+  <div class="grid2">
+    <div class="callout win" style="margin:0">Zero collisions across all 48 randomised runs, including the child dart-out and the cattle herd emerging from behind bushes. 47 of 48 reached the goal.</div>
+    <div class="callout warn" style="margin:0"><b>Watch list:</b> one village run waited behind a parked bullock cart until timeout (the no-blind-overtake rule was too strict); a 0.08 m near-miss in one market run and 0.18 m on the highway; junction p95 replan of about 200 ms (at the 0.2 s budget); 14 of 48 potholes touched. Report these openly.</div>
+  </div>
+</section>
+
+<!-- ============ ROADMAP ============ -->
+<section class="panel" id="roadmap" role="tabpanel">
+  <div class="section-title">Phased Build Plan</div>
+  <div class="phase" data-n="0"><h3>Python stack &amp; validation</h3><div class="dur">Done</div>
+    <ul><li>Full pipeline, 6 scenarios, 48-run Monte-Carlo, metrics, 2D demo video, report draft, MATLAB export</li></ul></div>
+  <div class="phase" data-n="1"><h3>Gazebo skeleton</h3><div class="dur">Week 1</div>
+    <ul><li>Install ROS 2 + Gazebo for your Ubuntu version; build the ego car SDF; drive it with <code>ros2 topic pub /model/ego_car/cmd_vel</code></li>
+      <li><code>gen_world.py</code> from <code>road.json</code>; S5 cattle world first (simplest geometry)</li></ul></div>
+  <div class="phase" data-n="2"><h3>Traffic manager + ground-truth loop</h3><div class="dur">Week 2</div>
+    <ul><li>Spawn agents, run world.py behaviours, set_pose at 20 Hz</li>
+      <li>Close the loop with <b>ground-truth tracks</b> first (skip perception): planner → controller → car. This proves the ROS 2 wiring.</li></ul></div>
+  <div class="phase" data-n="3"><h3>Real perception</h3><div class="dur">Weeks 3–4</div>
+    <ul><li>LiDAR clusterer + radar emulator → tracker; then YOLO on IDD + synthetic frames</li>
+      <li>Compare metrics: ground-truth vs sensor-model vs real perception</li></ul></div>
+  <div class="phase" data-n="4"><h3>Two detailed worlds</h3><div class="dur">Weeks 4–5</div>
+    <ul><li>Village road (heightmap, physical potholes, mud shoulder) and urban junction (shop rows, bus stop); lighting variants</li></ul></div>
+  <div class="phase" data-n="5"><h3>MATLAB / RoadRunner track</h3><div class="dur">Weeks 4–6 (in parallel)</div>
+    <ul><li>RoadRunner scenes for the same two worlds; Simulink model with Stateflow FSM; replay the remaining scenarios</li></ul></div>
+  <div class="phase" data-n="6"><h3>Evaluation &amp; report</h3><div class="dur">Week 6</div>
+    <ul><li>Monte-Carlo in Gazebo (seeds × lighting), metrics tables, final report, 3D demo video cut</li></ul></div>
+  <div class="phase" data-n="7"><h3>Finale prep</h3><div class="dur">Week 7</div>
+    <ul><li>Live demo script, backup recordings, answers ready for "what if perception fails?"</li></ul></div>
+</section>
+
+<!-- ============ DEMO & CRITERIA ============ -->
+<section class="panel" id="demo" role="tabpanel">
+  <div class="section-title">Judge-Facing Demo Script</div>
+  <div class="card">
+    <ol>
+      <li>30 s: problem framing on the blueprint Overview tab</li>
+      <li>Launch <b>S5 cattle</b> in Gazebo with RViz beside it: tracks, predictions and candidate paths. Narrate the herd appearing from behind the bushes and the car braking and waiting.</li>
+      <li><b>S2 junction</b>: the child steps out in front of the stopped bus. Point out the car was already at 16 km/h because of the occlusion cap.</li>
+      <li><b>S4 market</b>: the truck blockage, then the reroute on the map. Show the A* route change.</li>
+      <li>Metrics table (Results tab), then the MATLAB/RoadRunner replay of the same run</li>
+    </ol>
+  </div>
+  <div class="callout warn">Always carry pre-recorded Gazebo runs. Rendering-heavy worlds can drop the real-time factor on a venue laptop, and a stuttering live demo reads worse than a clean recording plus a short live segment.</div>
+
+  <div class="section-title">Quantified Success Criteria</div>
+  <div class="card">
+    <div class="metric-row"><span>Collision-free completion (per scenario, ≥ 8 seeds)</span><span>≥ 95% · Python now 98% (47/48)</span></div>
+    <div class="metric-row"><span>Replanning compute (mean / p95)</span><span>≤ 60 ms / ≤ 150 ms</span></div>
+    <div class="metric-row"><span>Reaction latency (detect → new plan)</span><span>≤ 0.3 s</span></div>
+    <div class="metric-row"><span>RMS lateral jerk (urban scenarios)</span><span>≤ 2.5 m/s³</span></div>
+    <div class="metric-row"><span>Minimum clearance to VRUs while moving</span><span>≥ 0.5 m</span></div>
+    <div class="metric-row"><span>Camera detection mAP@0.5 (IDD + synthetic, held-out)</span><span>report it; target ≥ 0.6</span></div>
+    <div class="metric-row"><span>Gazebo real-time factor during demo</span><span>≥ 0.8</span></div>
+  </div>
+</section>
+
+</main>
+
+<footer>BHARAT-AV BLUEPRINT · SIH 2026 · ADAPTIVE PATH PLANNING &amp; COLLISION AVOIDANCE ON UNSTRUCTURED INDIAN ROADS</footer>
+
+<script>
+(function(){
+  const tabs=[...document.querySelectorAll('.tab')];
+  const panels=[...document.querySelectorAll('.panel')];
+  function show(id,scroll){
+    if(!document.getElementById(id)) return;
+    tabs.forEach(t=>{const on=t.dataset.t===id; t.classList.toggle('active',on); t.setAttribute('aria-selected',on);});
+    panels.forEach(p=>p.classList.toggle('active',p.id===id));
+    try{localStorage.setItem('bav-tab',id);}catch(e){}
+    if(scroll) window.scrollTo({top:0,behavior:'smooth'});
+  }
+  tabs.forEach(t=>t.addEventListener('click',()=>{show(t.dataset.t,true); t.scrollIntoView({block:'nearest',inline:'nearest'});}));
+  let start=(location.hash||'').replace('#','');
+  if(!start){try{start=localStorage.getItem('bav-tab')||'';}catch(e){}}
+  if(start) show(start,false);
+  document.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',()=>{
+    const el=document.getElementById(b.dataset.copy); const txt=el.innerText;
+    const done=()=>{b.textContent='Copied'; setTimeout(()=>b.textContent='Copy',1400);};
+    try{navigator.clipboard.writeText(txt).then(done,()=>sel(el));}catch(e){sel(el);}
+  }));
+  function sel(el){const r=document.createRange(); r.selectNodeContents(el); const s=getSelection(); s.removeAllRanges(); s.addRange(r);}
+})();
+</script>
+
+</body>
+</html>

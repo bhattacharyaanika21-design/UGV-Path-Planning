@@ -1,0 +1,19 @@
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -r requirements.txt pytest
+      - name: Smoke tests (Python simulator)
+        run: python -m pytest -q tests
+      - name: Gazebo-loop rehearsal (no Gazebo needed)
+        working-directory: ros2_ws/src/bharat_sim
+        run: python test_offline.py S5 S6

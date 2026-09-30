@@ -1,0 +1,79 @@
+{
+ "title": "Occluded pedestrian dart-out (bonus)",
+ "description": "A child runs out from in front of a stopped bus while an auto approaches from the other side.",
+ "nodes": {
+  "A": [
+   0.0,
+   0.0
+  ],
+  "B": [
+   210.0,
+   0.0
+  ]
+ },
+ "edges": [
+  {
+   "u": "A",
+   "v": "B",
+   "width": 10.0,
+   "speed": 11.0,
+   "pts": [
+    [
+     0.0,
+     0.0
+    ],
+    [
+     210.0,
+     0.0
+    ]
+   ]
+  }
+ ],
+ "route_initial": [
+  "A",
+  "B"
+ ],
+ "route_final": [
+  "A",
+  "B"
+ ],
+ "potholes": [],
+ "occluders": [
+  [
+   [
+    -5.0,
+    7.6
+   ],
+   [
+    215.0,
+    7.6
+   ],
+   [
+    215.0,
+    20.0
+   ],
+   [
+    -5.0,
+    20.0
+   ]
+  ],
+  [
+   [
+    -5.0,
+    -7.6
+   ],
+   [
+    215.0,
+    -7.6
+   ],
+   [
+    215.0,
+    -20.0
+   ],
+   [
+    -5.0,
+    -20.0
+   ]
+  ]
+ ]
+}

@@ -1,0 +1,42 @@
+{
+ "title": "Highway merge with slow vehicles",
+ "description": "Slow tractor & truck, bus merging from the slip road without signalling, fast overtaker, wrong-way rider on the shoulder, stalled car, pedestrian.",
+ "nodes": {
+  "H0": [
+   0.0,
+   0.0
+  ],
+  "H1": [
+   520.0,
+   0.0
+  ]
+ },
+ "edges": [
+  {
+   "u": "H0",
+   "v": "H1",
+   "width": 11.0,
+   "speed": 19.0,
+   "pts": [
+    [
+     0.0,
+     0.0
+    ],
+    [
+     520.0,
+     0.0
+    ]
+   ]
+  }
+ ],
+ "route_initial": [
+  "H0",
+  "H1"
+ ],
+ "route_final": [
+  "H0",
+  "H1"
+ ],
+ "potholes": [],
+ "occluders": []
+}

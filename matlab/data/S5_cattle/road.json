@@ -1,0 +1,79 @@
+{
+ "title": "Sudden cattle crossing",
+ "description": "A herd walks out from behind roadside bushes; one animal stops mid-road and one turns back, with an oncoming truck and a car following close behind.",
+ "nodes": {
+  "R0": [
+   0.0,
+   0.0
+  ],
+  "R1": [
+   320.0,
+   0.0
+  ]
+ },
+ "edges": [
+  {
+   "u": "R0",
+   "v": "R1",
+   "width": 8.0,
+   "speed": 15.0,
+   "pts": [
+    [
+     0.0,
+     0.0
+    ],
+    [
+     320.0,
+     0.0
+    ]
+   ]
+  }
+ ],
+ "route_initial": [
+  "R0",
+  "R1"
+ ],
+ "route_final": [
+  "R0",
+  "R1"
+ ],
+ "potholes": [],
+ "occluders": [
+  [
+   [
+    125.0,
+    4.9
+   ],
+   [
+    165.0,
+    4.9
+   ],
+   [
+    165.0,
+    16.0
+   ],
+   [
+    125.0,
+    16.0
+   ]
+  ],
+  [
+   [
+    172.0,
+    -4.9
+   ],
+   [
+    205.0,
+    -4.9
+   ],
+   [
+    205.0,
+    -16.0
+   ],
+   [
+    172.0,
+    -16.0
+   ]
+  ]
+ ]
+}

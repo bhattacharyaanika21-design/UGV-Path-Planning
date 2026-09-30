@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+# generated outputs (regenerate with run_all.py); keep the small summaries
+results/videos/
+results/*.mp4
+results/*.npz
+results/traj_*.csv
+# ROS 2 / colcon
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+ros2_ws/src/bharat_sim/worlds/*.sdf
+# editors / OS
+.vscode/
+.idea/
+.DS_Store
