@@ -1,4 +1,4 @@
-# UGV-AV: Adaptive Path Planning & Collision Avoidance on Unstructured Indian Roads
+# UGV-AV:Adaptive Path Planning & Collision Avoidance on Unstructured Indian Roads
 
 ![CI](https://github.com/OWNER/bharat-av/actions/workflows/ci.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
