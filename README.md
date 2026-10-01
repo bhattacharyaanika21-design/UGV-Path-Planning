@@ -9,9 +9,7 @@
 A complete closed-loop autonomous-driving stack for roads **without lane discipline**:
 mixed traffic of cars, buses, auto-rickshaws, two-wheelers, pushcarts, pedestrians and
 cattle; missing lane markings; potholes; informal merging; and hazards hidden behind
-parked vehicles. It was built for the Smart India Hackathon 2026 problem statement
-*"Adaptive Path Planning and Collision Avoidance for Autonomous Vehicles on Unstructured
-Indian Roads"*.
+parked vehicles.
 
 <p align="center"><img src="docs/media/demo.gif" width="760" alt="The car brakes for a herd of cattle crossing from behind roadside bushes, then continues"></p>
 
