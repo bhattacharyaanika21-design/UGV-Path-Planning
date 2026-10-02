@@ -1,6 +1,6 @@
 # Adaptive Path Planning and Collision Avoidance for Autonomous Vehicles on Unstructured Indian Roads
 ### Technical report
-
+     
 ## 1. Problem
 
 Indian roads break the assumptions most autonomous-driving stacks are built on. Lane
