@@ -5,9 +5,9 @@ junction caution), OCCLUSION_CAUTION, WAIT (stopped, blocked), EMERGENCY,
 REROUTE. The FSM does not steer the car directly; it shapes the planner's
 objective (desired speed, preferred lateral offset) and triggers global
 rerouting. Situational speed caps implement defensive Indian-road driving:
-  * slow near unsignalised junctions ("creep and look");
-  * slow when passing a stopped bus/truck that may hide a pedestrian;
-  * slow near pedestrians/cattle close to the predicted path.
+  * slow down near unsignalised junctions ("creep and look");
+  * slow down when passing a stopped bus/truck that may hide a pedestrian;
+  * slow dowm near pedestrians/cattle close to the predicted path.
 """
 from __future__ import annotations
 
