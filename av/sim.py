@@ -2,9 +2,12 @@
 behaviour FSM / router -> lattice planner -> controller -> vehicle -> world.
 
 Rates: world + control 20 Hz, perception 10 Hz, planning 5 Hz periodic
-plus event-triggered replanning at 10 Hz whenever (a) a new object is
-confirmed near the path, (b) the current plan is invalidated by fresh
-predictions, or (c) the global route changes.
+plus event-triggered replanning at 10 Hz whenever 
+(a) a new object is
+confirmed near the path 
+(b) the current plan is invalidated by fresh
+predictions 
+(c) the global route changes.
 """
 from __future__ import annotations
 
