@@ -4,7 +4,7 @@
   "title": "Unmarked village road",
   "completed": true,
   "collision": false,
-  "collision_info": null,
+  "collision_info": null,    
   "time_s": 43.64999999999966,
   "distance_m": 263.86865286135645,
   "avg_speed_mps": 6.045100867385075,
