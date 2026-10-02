@@ -3,9 +3,7 @@ control pipeline as a reusable object with two entry points:
 
     stack.cycle(t, world)   # 10 Hz: sense, track, predict, route, decide, (re)plan
     stack.control(t)        # 20 Hz: tracking controller -> (a_cmd, steer, v_ref)
-
-It holds exactly the same logic as ``sim.run`` but does not own the world or
-the vehicle dynamics, so it can be driven by the pure-Python simulator, by a
+It can be driven by the pure-Python simulator, by a
 ROS 2 node fed from Gazebo, or by a Simulink bridge.
 """
 from __future__ import annotations
