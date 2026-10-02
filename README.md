@@ -197,9 +197,7 @@ docs/                   technical report, blueprint, media
   out without a collision.
 
 ## Acknowledgements
-
-Built for Smart India Hackathon 2026. The problem statement recommends MathWorks tools;
-this repository is an open-source Python/ROS 2 implementation with a MATLAB export bridge.
+This repository is an open-source Python/ROS 2 implementation with a MATLAB export bridge.
 
 ## License
 
