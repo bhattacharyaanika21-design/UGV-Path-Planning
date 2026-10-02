@@ -1,7 +1,7 @@
 """Six Indian road scenarios (five required + one bonus).
 
 Each builder takes a seed; the seed jitters speeds, trigger distances,
-positions and wander noise so Monte-Carlo runs give a completion *rate*
+positions and wander noise so Monte-Carlo runs give a completion rate
 rather than one hand-tuned pass.
 
  S1 village   – unmarked, narrow, curvy village road: potholes, bicycle,
@@ -12,7 +12,7 @@ rather than one hand-tuned pass.
                 crossing anywhere, stopped bus hiding a pedestrian.
  S3 highway   – highway with slow tractor/truck, bus merging from the slip
                 road without signalling, fast overtaker, wrong-way rider on
-                the shoulder, stalled car, pedestrian crossing.
+                the shoulder, stalled car or pedestrian crossing.
  S4 market    – dense market lane with wandering pedestrians, pushcarts,
                 parked autos, a cow, an auto stopping abruptly; a delivery
                 truck + pushcart block the lane ahead -> global reroute.
