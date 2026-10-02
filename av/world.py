@@ -1,13 +1,13 @@
 """Ground-truth world: road network, mixed-traffic agents, potholes, occluders.
 
-Agent behaviours are deliberately *not* lane based. They include lateral
+Agent behaviours are deliberately not lane based. They include lateral
 wander, informal merging without signalling, wrong-way driving, abrupt stops,
-pedestrians darting out, and cattle that stop or turn back mid-road.
+pedestrians darting out and cattle that stop or turn back mid-road.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-
+    
 import numpy as np
 
 from .geometry import ReferencePath, fillet_polyline, wrap_angle
@@ -15,7 +15,7 @@ from .geometry import ReferencePath, fillet_polyline, wrap_angle
 # ---------------------------------------------------------------------------
 # Road-user classes (length, width, colour, lidar/radar visibility)
 # ---------------------------------------------------------------------------
-CLASSES = {
+CLASSES = { 
     "car":        dict(L=4.2, W=1.8, color="#4c78a8", rcs=1.0),
     "bus":        dict(L=11.0, W=2.6, color="#f58518", rcs=1.0),
     "truck":      dict(L=9.0, W=2.5, color="#b279a2", rcs=1.0),
