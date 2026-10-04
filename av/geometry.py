@@ -1,8 +1,8 @@
 """Geometry helpers: filleted polylines and a Frenet reference path.
 
 The reference path is the backbone of the planner. On unstructured Indian
-roads there are no lane markings, so the "reference" is simply the road
-centre line recovered from the map / road-edge estimate, and the planner is
+roads there are no lane markings, so the reference is simply the road
+centre line recovered from the map / road-edge estimate, and the planner is  
 free to use any lateral offset inside the drivable width.
 """
 from __future__ import annotations
