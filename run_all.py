@@ -2,7 +2,7 @@
 """Run all scenarios (Monte-Carlo over seeds), collect metrics, render videos.
 
 Usage
-  python3 run_all.py                 # 6 scenarios x 5 seeds, videos for seed 0
+  python3 run_all.py            ( 6 scenarios x 5 seeds, videos for seed 0)
   python3 run_all.py --seeds 10 --jobs 4
   python3 run_all.py --only S5 --seeds 1
   python3 run_all.py --no-video      # metrics only (fast)
