@@ -5,7 +5,7 @@ stop or turn back) and teleports the matching Gazebo models every tick.
 
 Publishes /gt/agents (std_msgs/String, JSON) = ground truth for the
 autonomy node's sensor models and for the metrics.
-"""
+"""     
 from __future__ import annotations
 
 import shutil
