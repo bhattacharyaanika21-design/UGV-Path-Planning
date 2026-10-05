@@ -3,7 +3,7 @@
 to CSV/JSON so it can be replayed in MATLAB's drivingScenario / Driving
 Scenario Designer, or used to author the matching RoadRunner scenes.
 
-    python3 export_matlab.py            # writes matlab/data/<scenario>/...
+    python3 export_matlab.py          # writes matlab/data/<scenario>/...
 Then in MATLAB:
     cd matlab; replay_scenario("S1_village")
 """
