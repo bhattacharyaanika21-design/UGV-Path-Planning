@@ -1,7 +1,7 @@
 # Adaptive Path Planning and Collision Avoidance for Autonomous Vehicles on Unstructured Indian Roads
 ### Technical report
      
-## 1. Problem
+## 1. Problem     
 
 Indian roads break the assumptions most autonomous-driving stacks are built on. Lane
 markings are often missing. Road edges are blurred by shoulders and encroachment.
@@ -19,7 +19,7 @@ We built a closed-loop system that:
 * reroutes when the road ahead is blocked.
 
 It is validated on six scenarios with Monte-Carlo runs.
-
+                               
 ## 2. System architecture
 
 | Layer | Rate | Method |
